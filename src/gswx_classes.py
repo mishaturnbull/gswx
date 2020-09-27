@@ -10,6 +10,7 @@ myself enough.
 """
 
 import datetime
+import re
 
 
 # format is:
@@ -161,6 +162,23 @@ class PointMETAR(object):
             # as is and show to the user
             pass
         self.windspd = int(wind_segment[3:])
+
+        # temperature time!
+        tempre = re.compile("M?[0-9]{2}/M?[0-9]{2}")
+        tempgroup = None
+        for part in parts:
+            if tempre.match(part):
+                tempgroup = part
+                break
+        left, right = tempgroup.split('/')
+        if 'M' in left:
+            self.temp = -int(left[1:])
+        else:
+            self.temp = int(left)
+        if 'M' in right:
+            self.dewpt = -int(right[1:])
+        else:
+            self.dewpt = int(right)
 
         self.parse_cav(parts)
 
